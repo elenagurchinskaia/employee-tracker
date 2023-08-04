@@ -1,20 +1,3 @@
-// What is being asked?
-
-// > 01. On start show a list of options.
-// > > view all departments,
-// > > view all roles,
-// > > view all employees,
-// > > add a department,
-// > > add a role,
-// > > add an employee,
-// > > and update an employee role
-
-// > 02. When I select the department list.
-// call a function viewAllDeps
-// > > view department id and name
-
-// > 03. When I select a role
-// > > job title, role id, the department
 const inquirer = require("inquirer");
 const db = require("db");
 
@@ -175,10 +158,115 @@ function addRoles() {
 
 function addEmployee() {
   // PROMPT
-  // first name (TEXT)
-  // last name (TEXT)
-  // db.query roles
-  // role (LIST)
+  inquirer
+    .prompt([
+      {
+        // first name
+        type: "input",
+        name: "firstName",
+        message: "What is the employee's first name?",
+        validate: (value) =>
+          value ? true : "Please, enter the employees's first name.",
+      },
+      {
+        // last name
+        type: "input",
+        name: "lastName",
+        message: "What is the employee's last name?",
+        validate: (value) =>
+          value ? true : "Please, enter the employees's last name.",
+      },
+      {
+        // role
+        type: "list",
+        name: "role",
+        message: "What is the employee's role?",
+        choices: [
+          "Sales Lead",
+          "Salesperson",
+          "Lead Engineer",
+          "Software Engineer",
+          "Account Manager",
+          "Accountant",
+          "Legal Team Lead",
+          "Lawer",
+        ],
+      },
+      {
+        // manager
+        type: "list",
+        name: "manager",
+        message: "Who is the employee's manager?",
+        choices: [
+          "None",
+          "John Doe",
+          "Mike Chan",
+          "Ashley Rodriguez",
+          "Kevin Tupik",
+          "Kunal Singh",
+          "Malia Brown",
+          "Sarah Lourd",
+          "Tom Allen",
+        ],
+      },
+    ])
+    // db.query roles
+    .then((answer) => {
+        // Get the role_id for the selected role
+        db.query("SELECT id FROM roles WHERE title = ?", [answer.role], (err, roleData) => {
+          if (err) {
+            console.log(err);
+            return;
+          }
+  
+          const roleId = roleData[0].id;
+          let managerId = null;
+  
+          // If the employee has a manager, get the manager_id for the selected manager
+          if (answer.manager !== "None") {
+            db.query("SELECT id FROM employees WHERE CONCAT(first_name, ' ', last_name) = ?", [answer.manager], (err, managerData) => {
+                err
+                ? console.log(err)
+                : console.log("New employee added successfully!");
+            });
+            })
+  
+              managerId = managerData[0].id;
+              let managerId = null
+
+              .then((answer) => {
+                // Get the role_id for the selected role
+                db.query("SELECT id FROM roles WHERE title = ?", [answer.role], (err, roleData) => {
+                            err
+                            ? console.log(err)
+                            : console.log("New employee added successfully!");
+                        })
+                });
+          
+                  const roleId = roleData[0].id;
+                  let managerId = null;
+          
+                  // If the employee has a manager, get the manager_id for the selected manager
+                  if (answer.manager !== "None") {
+                    db.query("SELECT id FROM employees WHERE CONCAT(first_name, ' ', last_name) = ?", [answer.manager], (err, managerData) => {
+                        err
+                        ? console.log(err)
+                        : console.log("New employee added successfully!");
+                    })
+                      }
+          
+                      managerId = managerData[0].id;
+
+                      db.query(
+                        "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
+                        [answer.firstName, answer.lastName, roleId, managerId],
+                        (err, result) => {
+                            err
+                            ? console.log(err)
+                            : console.log("New employee added successfully!");
+                        })
+                    });
+
   // manager (LIST)
   // db query employees INSERT new employee
 }
