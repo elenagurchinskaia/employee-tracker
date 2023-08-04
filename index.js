@@ -20,23 +20,52 @@ const db = require("db");
 
 function init() {
   // inquirer promts
-  inquirer.prompt([
-    {
-      type: "list",
-      name: "option",
-      message: "Choose an option:",
-      choice: [
-        "View all departments",
-        "View all roles",
-        "View all employees",
-        "Add a department",
-        "Add a role",
-        "Add an employee",
-        "Update an employee role",
-        "Quit",
-      ],
-    },
-  ]);
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "action",
+        message: "What would you like to do?",
+        choices: [
+          "View all departments",
+          "View all roles",
+          "View all employees",
+          "Add a department",
+          "Add a role",
+          "Add an employee",
+          "Update an employee role",
+          "Quit",
+        ],
+      },
+    ])
+    .then((answer) => {
+      switch (answer.option) {
+        case "View all departments":
+          viewAllDepts();
+          break;
+        case "View all roles":
+          viewAllRoles();
+          break;
+        case "View all employees":
+          viewAllEmployees();
+          break;
+        case "Add a department":
+          addDepartments();
+          break;
+        case "Add a role":
+          addRoles();
+          break;
+        case "Add an employee":
+          addEmployee();
+          break;
+        case "Update an employee role":
+          updateEmployeeRoles();
+          break;
+        case "Quit":
+          quit();
+          break;
+      }
+    });
   // // options
   // VIEW
   // // departments
@@ -57,14 +86,28 @@ function viewAllDepts() {
 
 function viewAllRoles() {
   // db query from roles tables
+  db.query("SELECT * FROM roles", (err, results) => {
+    err ? console.log(err) : console.log(results);
+  });
 }
 
 function viewAllEmployees() {
   // db query from employees table
+  db.query("SELECT * FROM employees", (err, results) => {
+    err ? console.log(err) : console.log(results);
+  });
 }
 
 function addDepartments() {
   // prompt for department name
+  inquirer.prompt([
+    {
+      type: "input",
+      name: "departmentName",
+      message: "What is the name of the department?",
+      validate: (value) => (value ? true : "Please, enter a department name."),
+    },
+  ]);
   // // make new const for department name
   //  // .then db query INSERT new department
 }
