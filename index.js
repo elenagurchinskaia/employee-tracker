@@ -1,6 +1,8 @@
 const inquirer = require("inquirer");
 const db = require("db");
 
+// ====================================================== init ============================================================ //
+
 function init() {
   // inquirer promts
   inquirer
@@ -60,12 +62,17 @@ function init() {
   // // employees
   // update employee role
 }
+
+// ====================================================== viewAllDepts ============================================================ //
+
 function viewAllDepts() {
   // db query from departments
   db.query("SELECT * FROM departments", (err, results) => {
     err ? console.log(err) : console.log(results);
   });
 }
+
+// ====================================================== viewAllRoles ============================================================ //
 
 function viewAllRoles() {
   // db query from roles tables
@@ -74,12 +81,16 @@ function viewAllRoles() {
   });
 }
 
+// ====================================================== viewEmployees ============================================================ //
+
 function viewAllEmployees() {
   // db query from employees table
   db.query("SELECT * FROM employees", (err, results) => {
     err ? console.log(err) : console.log(results);
   });
 }
+
+// ====================================================== addDepartments ============================================================ //
 
 function addDepartments() {
   // prompt for department name
@@ -107,6 +118,9 @@ function addDepartments() {
       );
     });
 }
+
+// ====================================================== addRoles ============================================================ //
+
 function addRoles() {
   // PROMPT
   inquirer
@@ -155,6 +169,8 @@ function addRoles() {
       );
     });
 }
+
+// ====================================================== addEmployee ============================================================ //
 
 function addEmployee() {
   // PROMPT
@@ -212,71 +228,108 @@ function addEmployee() {
     ])
     // db.query roles
     .then((answer) => {
-        // Get the role_id for the selected role
-        db.query("SELECT id FROM roles WHERE title = ?", [answer.role], (err, roleData) => {
+      // Get the role_id for the selected role
+      db.query(
+        "SELECT id FROM roles WHERE title = ?",
+        [answer.role],
+        (err, roleData) => {
           if (err) {
             console.log(err);
             return;
           }
-  
+
           const roleId = roleData[0].id;
-          let managerId = null;
-  
+
           // If the employee has a manager, get the manager_id for the selected manager
           if (answer.manager !== "None") {
-            db.query("SELECT id FROM employees WHERE CONCAT(first_name, ' ', last_name) = ?", [answer.manager], (err, managerData) => {
-                err
-                ? console.log(err)
-                : console.log("New employee added successfully!");
-            });
-            })
-  
-              managerId = managerData[0].id;
-              let managerId = null
+            db.query(
+              "SELECT id FROM employees WHERE CONCAT(first_name, ' ', last_name) = ?",
+              [answer.manager],
+              (err, managerData) => {
+                if (err) {
+                  console.log(err);
+                  return;
+                }
 
-              .then((answer) => {
-                // Get the role_id for the selected role
-                db.query("SELECT id FROM roles WHERE title = ?", [answer.role], (err, roleData) => {
-                            err
-                            ? console.log(err)
-                            : console.log("New employee added successfully!");
-                        })
-                });
-          
-                  const roleId = roleData[0].id;
-                  let managerId = null;
-          
-                  // If the employee has a manager, get the manager_id for the selected manager
-                  if (answer.manager !== "None") {
-                    db.query("SELECT id FROM employees WHERE CONCAT(first_name, ' ', last_name) = ?", [answer.manager], (err, managerData) => {
-                        err
+                managerId = managerData[0].id;
+
+                db.query().then((answer) => {
+                  // Get the role_id for the selected role
+                  db.query(
+                    "SELECT id FROM roles WHERE title = ?",
+                    [answer.role],
+                    (err, roleData) => {
+                      err
                         ? console.log(err)
                         : console.log("New employee added successfully!");
-                    })
-                      }
-          
-                      managerId = managerData[0].id;
+                    }
+                  );
+                });
 
-                      db.query(
-                        "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
-                        [answer.firstName, answer.lastName, roleId, managerId],
-                        (err, result) => {
-                            err
-                            ? console.log(err)
-                            : console.log("New employee added successfully!");
-                        })
-                    });
+                const roleId = roleData[0].id;
 
-  // manager (LIST)
-  // db query employees INSERT new employee
+                // If the employee has a manager, get the manager_id for the selected manager
+                if (answer.manager !== "None") {
+                  db.query(
+                    "SELECT id FROM employees WHERE CONCAT(first_name, ' ', last_name) = ?",
+                    [answer.manager],
+                    (err, managerData) => {
+                      err
+                        ? console.log(err)
+                        : console.log("New employee added successfully!");
+                    }
+                  );
+                }
+
+                managerId = managerData[0].id;
+
+                db.query(
+                  "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
+                  [answer.firstName, answer.lastName, roleId, managerId],
+                  (err, result) => {
+                    if (err) {
+                      console.log(err);
+                    } else {
+                      console.log("New employee added successfully!");
+                    }
+                  }
+                );
+              }
+            );
+          } else {
+            db.query(
+              "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
+              [answer.firstName, answer.lastName, roleId, managerId],
+              (err, result) => {
+                if (err) {
+                  console.log(err);
+                } else {
+                  console.log("New employee added successfully!");
+                }
+              }
+            );
+          }
+        }
+      );
+    });
 }
+
+// manager (LIST)
+// db query employees INSERT new employee
+
+// ====================================================== updateEmployeeRoles ============================================================ //
+
 function updateEmployeeRoles() {
   // PROMPT
   // which employee (LIST)
   // db query employees search emploee id
 }
 
+// ====================================================== quit ============================================================ //
+
 function quit() {
   console.log("Goodbye!");
   process.exit();
 }
+
+init();
