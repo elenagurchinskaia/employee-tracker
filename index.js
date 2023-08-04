@@ -79,7 +79,7 @@ function init() {
 }
 function viewAllDepts() {
   // db query from departments
-  db.query(`SELECT * FROM departments`, (err, results) => {
+  db.query("SELECT * FROM departments", (err, results) => {
     err ? console.log(err) : console.log(results);
   });
 }
@@ -100,25 +100,79 @@ function viewAllEmployees() {
 
 function addDepartments() {
   // prompt for department name
-  inquirer.prompt([
-    {
-      type: "input",
-      name: "departmentName",
-      message: "What is the name of the department?",
-      validate: (value) => (value ? true : "Please, enter a department name."),
-    },
-  ]);
-  // // make new const for department name
-  //  // .then db query INSERT new department
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "departmentName",
+        message: "What is the name of the department?",
+        validate: (value) =>
+          value ? true : "Please, enter a department name.",
+      },
+    ])
+    // // make new const for department name
+    //  // .then db query INSERT new department
+    .then((answer) => {
+      db.query(
+        "INSERT INTO departments (name) VALUES (?)",
+        [answer.departmentName],
+        (err, result) => {
+          err
+            ? console.log(err)
+            : console.log("New department added successfully!");
+        }
+      );
+    });
 }
 function addRoles() {
   // PROMPT
-  // role name (TEXT)
-  // role salary (INT)
-  //   db.query departments
-  // which department (LIST)
-  // db query roles insert new role
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "title",
+        message: "Enter the role title:",
+        validate: (value) => (value ? true : "Please, enter a role title."),
+      },
+      {
+        type: "number",
+        name: "salary",
+        message: "Enter the role salary:",
+        validate: (value) =>
+          !isNaN(value) ? true : "Please, enter a valid salary.",
+      },
+      {
+        type: "list",
+        name: "department",
+        message: "Choose the department:",
+        choices: ["Sales", "Engineering", "Finance", "Legal"],
+      },
+    ])
+    .then((answer) => {
+      // Get the department_id for the selected department
+      db.query(
+        "SELECT id FROM departments WHERE name = ?",
+        [answer.department],
+        (err, departmentData) => {
+          err ? console.log(err) : console.log(err);
+
+          const departmentId = departmentData[0].id;
+
+          // Insert new role into the roles table
+          db.query(
+            "INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)",
+            [answer.title, answer.salary, departmentId],
+            (err, result) => {
+              err
+                ? console.log(err)
+                : console.log("New role added successfully!");
+            }
+          );
+        }
+      );
+    });
 }
+
 function addEmployee() {
   // PROMPT
   // first name (TEXT)
