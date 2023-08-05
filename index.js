@@ -151,13 +151,31 @@ function deleteDepartments() {
     .then((answer) => {
       const departmentId = answer.departmentId;
       db.query(
-        "DELETE FROM departments WHERE name = ?",
+        "SELECT id FROM departments WHERE id = ?",
         [departmentId],
-        (err, result) => {
+        (err, results) => {
           if (err) {
             console.log(err);
           } else {
-            console.log("Department deleted successfully!");
+            if (results.length === 0) {
+              console.log(
+                `Department with ID ${departmentId} not found. Please enter a valid ID.`
+              );
+            } else {
+              db.query(
+                "DELETE FROM departments WHERE id = ?",
+                [departmentId],
+                (err, result) => {
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    console.log(
+                      `Department with ID ${departmentId} deleted successfully!`
+                    );
+                  }
+                }
+              );
+            }
           }
         }
       );
@@ -426,13 +444,31 @@ function deleteEmployee() {
       const employeeId = answer.employeeId;
 
       db.query(
-        "DELETE FROM employees WHERE id = ?",
+        "SELECT id FROM employees WHERE id = ?",
         [employeeId],
-        (err, result) => {
+        (err, results) => {
           if (err) {
             console.log(err);
           } else {
-            console.log(`Employee with ID ${employeeId} deleted successfully!`);
+            if (results.length === 0) {
+              console.log(
+                `Employee with ID ${employeeId} not found. Please enter a valid ID.`
+              );
+            } else {
+              db.query(
+                "DELETE FROM employees WHERE id = ?",
+                [employeeId],
+                (err, result) => {
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    console.log(
+                      `Employee with ID ${employeeId} deleted successfully!`
+                    );
+                  }
+                }
+              );
+            }
           }
         }
       );
