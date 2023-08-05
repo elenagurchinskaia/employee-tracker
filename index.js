@@ -142,22 +142,22 @@ function deleteDepartments() {
   inquirer
     .prompt([
       {
-        type: "list",
-        name: "departmentName",
-        message: "Select the department you want to delete:",
-        choices: getDepartmnetNames(),
+        type: "input",
+        name: "departmentId",
+        message: "Enter the ID of the department you want to delete:",
+        validate: (value) => (value ? true : "Please, enter a department ID."),
       },
     ])
     .then((answer) => {
-      const departmentName = answer.departmentName;
+      const departmentId = answer.departmentId;
       db.query(
         "DELETE FROM departments WHERE name = ?",
-        [departmentName],
+        [departmentId],
         (err, result) => {
           if (err) {
             console.log(err);
           } else {
-            console.log('Department "${departmentName}" deleted successfully!');
+            console.log("Department deleted successfully!");
           }
         }
       );
@@ -216,7 +216,52 @@ function addRoles() {
       );
     });
 }
+// ====================================================== deleteRole ============================================================ //
 
+function deleteRole() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "roleId",
+        message: "Enter the ID of the role you want to delete:",
+        validate: (value) => (value ? true : "Please enter a role ID."),
+      },
+    ])
+    .then((answer) => {
+      const roleId = answer.roleId;
+
+      // Check if the role with the provided ID exists
+      db.query(
+        "SELECT id FROM roles WHERE id = ?",
+        [roleId],
+        (err, results) => {
+          if (err) {
+            console.log(err);
+          } else {
+            if (results.length === 0) {
+              console.log(
+                `Role with ID ${roleId} not found. Please enter a valid ID.`
+              );
+            } else {
+              db.query(
+                "DELETE FROM roles WHERE id = ?",
+                [roleId],
+                (err, result) => {
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    console.log(`Role with ID ${roleId} deleted successfully!`);
+                  }
+                }
+              );
+            }
+          }
+        }
+      );
+      menu();
+    });
+}
 // ====================================================== addEmployee ============================================================ //
 
 function addEmployee() {
@@ -472,35 +517,6 @@ function updateEmployeeRoles() {
         });
       });
   });
-}
-
-// ====================================================== deleteRole ============================================================ //
-
-function deleteRole() {
-  inquirer
-    .prompt([
-      {
-        type: "list",
-        name: "roleTitle",
-        message: "Select the role you want to delete:",
-        choices: getRoleTitle(),
-      },
-    ])
-    .then((answer) => {
-      const roleTitle = answer.roleTitle;
-      db.query(
-        "DELETE FROM departments WHERE name = ?",
-        [roleTitle],
-        (err, result) => {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log('Role "${roleTitle}" deleted successfully!');
-          }
-        }
-      );
-      menu();
-    });
 }
 // ====================================================== quit ============================================================ //
 
