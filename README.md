@@ -27,6 +27,8 @@ N/A
 
 This command-line application is designed to simplify the management of departments, roles, and employees within a company's database. Users can access a range of features through the terminal, making it easy to handle various tasks related to personnel management.
 
+[Video](!--https://drive.google.com/file/d/1RDff4uE26RYVC031KMeAbbU734ivHg7e/view--)
+
 ## Technology Used
 
 [JavaScript](!--https://developer.mozilla.org/en-US/docs/Web/JavaScript--)
@@ -36,7 +38,7 @@ This command-line application is designed to simplify the management of departme
 
 ## Deployment
 
-![alt text](public/assets/images/note-taker.png)
+N/A
 
 ## Author
 
