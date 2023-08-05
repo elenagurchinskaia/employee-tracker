@@ -16,8 +16,11 @@ function menu() {
           "View all roles",
           "View all employees",
           "Add a department",
+          "Delete a department",
           "Add a role",
+          "Delete a role",
           "Add an employee",
+          "Delete an employee",
           "Update an employee role",
           "Quit",
         ],
@@ -39,11 +42,20 @@ function menu() {
         case "Add a department":
           addDepartments();
           break;
+        case "Delete a department":
+          deleteDepartments();
+          break;
         case "Add a role":
           addRoles();
           break;
+        case "Delete a role":
+          deleteRole();
+          break;
         case "Add an employee":
           addEmployee();
+          break;
+        case "Delete an employee":
+          deleteEmployee();
           break;
         case "Update an employee role":
           updateEmployeeRoles();
@@ -119,6 +131,34 @@ function addDepartments() {
           err
             ? console.log(err)
             : console.log("New department added successfully!");
+        }
+      );
+      menu();
+    });
+}
+// ====================================================== deleteDepartments ============================================================ //
+
+function deleteDepartments() {
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "departmentName",
+        message: "Select the department you want to delete:",
+        choices: getDepartmnetNames(),
+      },
+    ])
+    .then((answer) => {
+      const departmentName = answer.departmentName;
+      db.query(
+        "DELETE FROM departments WHERE name = ?",
+        [departmentName],
+        (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log('Department "${departmentName}" deleted successfully!');
+          }
         }
       );
       menu();
@@ -325,7 +365,35 @@ function addEmployee() {
 
 // manager (LIST)
 // db query employees INSERT new employee
+// ====================================================== deleteEmployee ============================================================ //
 
+function deleteEmployee() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "employeeId",
+        message: "Enter the ID of the employee you want to delete:",
+        validate: (value) => (value ? true : "Please enter an employee ID."),
+      },
+    ])
+    .then((answer) => {
+      const employeeId = answer.employeeId;
+
+      db.query(
+        "DELETE FROM employees WHERE id = ?",
+        [employeeId],
+        (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(`Employee with ID ${employeeId} deleted successfully!`);
+          }
+        }
+      );
+      menu();
+    });
+}
 // ====================================================== updateEmployeeRoles ============================================================ //
 
 function updateEmployeeRoles() {
@@ -404,6 +472,35 @@ function updateEmployeeRoles() {
         });
       });
   });
+}
+
+// ====================================================== deleteRole ============================================================ //
+
+function deleteRole() {
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "roleTitle",
+        message: "Select the role you want to delete:",
+        choices: getRoleTitle(),
+      },
+    ])
+    .then((answer) => {
+      const roleTitle = answer.roleTitle;
+      db.query(
+        "DELETE FROM departments WHERE name = ?",
+        [roleTitle],
+        (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log('Role "${roleTitle}" deleted successfully!');
+          }
+        }
+      );
+      menu();
+    });
 }
 // ====================================================== quit ============================================================ //
 
